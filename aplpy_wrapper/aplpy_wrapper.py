@@ -1,7 +1,11 @@
 import matplotlib.pyplot as plt
+import os
 from astropy.io import fits
 from astropy.wcs import WCS
 from wcsaxes import WCSAxes
+from ticks import APLpyTicks as Ticks
+from ticklabels import APLplyTickLabels as TickLabels
+from axis_labels import APLpyAxisLabels as AxisLabels
 
 
 class FITSFigure(object):
@@ -107,7 +111,6 @@ class FITSFigure(object):
         if 'figsize' not in kwargs:
             self._kwargs['figsize'] = (10, 9)
 
-
         # TODO: Currently only assumes files are fits files, fix so it also
         # works with HDU objects
 
@@ -117,11 +120,16 @@ class FITSFigure(object):
 
         # Get the HDU data from the file
         self.hdu = fits.open(data)[hdu]
-        wcs = WCS(self.hdu.header)
-        self.ax = WCSAxes(self.fig, [0.1, 0.1, 0.8, 0.8], wcs=wcs)
+        self.wcs = WCS(self.hdu.header)
+        self.ax = WCSAxes(self.fig, [0.1, 0.1, 0.8, 0.8], wcs=self.wcs)
         # self.fig.add_axes(self.ax)  # note that the axes have to be added to the figure
         # ax.imshow(hdu.data, vmin=-2.e-5, vmax=2.e-4, cmap=plt.cm.gist_heat,
         #           origin='lower') # imshow should be at show_colorscale()
+
+        # Initialize Ticks, TickLabels and AxisLabels
+        self.ticks = Ticks(self.ax)
+        self.axis_labels = AxisLabels(self.ax)
+        self.tick_labels = TickLabels(self.ax)
 
     def show_colorscale(self, vmin=None, vmid=None, vmax=None,
                         pmin=0.25, pmax=99.75, stretch='linear', exponent=2,
@@ -296,16 +304,24 @@ class FITSFigure(object):
         pass
         # self.hide_colorscale(*args, **kwargs)
 
+    def show_contour(self, data=None, hdu=0, layer=None, levels=5,
+                     filled=False, cmap=None, colors=None, returnlevels=False,
+                     convention=None, dimensions=[0, 1], slices=[],
+                     smooth=None, kernel='gauss', overlap=False, **kwargs):
+        pass
+
     def save(self, filename, dpi=None, transparent=False, adjust_bbox=True,
              max_dpi=300, format=None):
-        if isinstance(filename, basestring) and format is None:
-                format = os.path.splitext(filename)[1].lower()[1:]
-        if adjust_bbox:
-            self.fig.savefig(filename, transparent=transparent, dpi=dpi,
-                             bbox_inches='tight', format=format)
-        else:
-            self.fig.savefig(filename, transparent=transparent, dpi=dpi,
-                             format=format)
+        self.fig.savefig(filename)
+        # self.fig.savefig(filename, transparent=transparent, dpi=dpi, format=format)
+        # if isinstance(filename, basestring) and format is None:
+        #         format = os.path.splitext(filename)[1].lower()[1:]
+        # if adjust_bbox:
+        #     self.fig.savefig(filename, transparent=transparent, dpi=dpi,
+        #                      bbox_inches='tight', format=format)
+        # else:
+        #     self.fig.savefig(filename, transparent=transparent, dpi=dpi,
+        #                      format=format)
 
     def set_xaxis_coord_type(self, coord_type):
         '''
@@ -338,6 +354,72 @@ class FITSFigure(object):
 
     def recenter(self, x, y, radius=None, width=None, height=None):
         pass
+
+    def add_label(self, x, y, text, relative=False, color='black',
+                  family=None, style=None, variant=None, stretch=None,
+                  weight=None, size=None, fontproperties=None,
+                  horizontalalignment='center', verticalalignment='center',
+                  layer=None, **kwargs):
+        # TODO: Should I do all the checking for parameters?
+        if relative:
+            self.ax.text(x, y, text, color=color, family=family, style=style,
+                         variant=variant, stretch=stretch, weight=weight,
+                         size=size, horizontalalignment=horizontalalignment,
+                         verticalalignment=verticalalignment,
+                         transform=self._ax1.transAxes, **kwargs)
+        else:
+            # Do a world2pix transformation
+            # xp, yp = ...
+            # Should I use the world2pix transformation from WCSAxes?
+            xp, yp = WCS.wcs_world2pix(self.wcs, x, y)  # This doesn't feel right
+            self._ax1.text(xp, yp, text, color=color, family=family,
+                           style=style, variant=variant, stretch=stretch,
+                           weight=weight, size=size,
+                           horizontalalignment=horizontalalignment,
+                           verticalalignment=verticalalignment, **kwargs)
+
+    def set_auto_refresh(self, refresh):
+        pass
+
+    def refresh(self, force=True):
+        pass
+
+    def set_theme(self, theme):
+        pass
+
+    def add_grid(self, *args, **kwargs):
+        pass
+
+    def remove_grid(self):
+        pass
+
+    def add_beam(self, *args, **kwargs):
+        pass
+
+    def remove_beam(self, beam_index=None):
+        pass
+
+    def add_scalebar(self, length, *args, **kwargs):
+        pass
+
+    def remove_scalebar(self):
+        pass
+
+    def add_colorbar(self, *args, **kwargs):
+        pass
+
+    def remove_colorbar(self):
+        pass
+
+    def show_rgb(self, filename=None, interpolation='nearest',
+                 vertical_flip=False, horizontal_flip=False, flip=False):
+        # Can WCSAxes show rgb images?
+        pass
+
+    def close(self):
+        plt.close(self.fig)
+
+
 
 
 
