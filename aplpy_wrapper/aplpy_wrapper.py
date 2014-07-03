@@ -333,8 +333,7 @@ class FITSFigure(object):
         * ``longitude``: treat the values as a longitude in the 0 to 360 range
         * ``latitude``: treat the values as a latitude in the -90 to 90 range
         '''
-        # self._wcs.set_xaxis_coord_type(coord_type)
-        pass
+        self.ax.coords[0].set_coord_type(coord_type)
 
     def set_yaxis_coord_type(self, coord_type):
         '''
@@ -346,8 +345,7 @@ class FITSFigure(object):
         * ``longitude``: treat the values as a longitude in the 0 to 360 range
         * ``latitude``: treat the values as a latitude in the -90 to 90 range
         '''
-        pass
-        # self._wcs.set_yaxis_coord_type(coord_type)
+        self.ax.coords[1].set_coord_type(coord_type)
 
     def set_system_latex(self, usetex):
         pass
@@ -418,13 +416,3 @@ class FITSFigure(object):
 
     def close(self):
         plt.close(self.fig)
-
-
-
-
-
-
-
-
-
-
