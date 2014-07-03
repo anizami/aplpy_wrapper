@@ -49,17 +49,6 @@ class APLplyTickLabels(object):
         else:
             self._ax.coords[1].set_major_formatter(formatter)
 
-    def set_style(self, style):
-        """
-        Set the format of the x-axis tick labels.
-
-        This can be 'colons' or 'plain':
-
-            * 'colons' uses colons as separators, for example 31:41:59.26 +27:18:28.1
-            * 'plain' uses letters and symbols as separators, for example 31h41m59.26s +27º18'28.1"
-        """
-        # Need to figure out how to set the separators for angular coordinates.
-        pass
 
     def set_font(self, family=None, style=None, variant=None, stretch=None, weight=None, size=None, fontproperties=None):
         """

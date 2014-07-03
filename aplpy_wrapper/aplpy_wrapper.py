@@ -6,6 +6,7 @@ from wcsaxes import WCSAxes
 from ticks import APLpyTicks as Ticks
 from ticklabels import APLplyTickLabels as TickLabels
 from axis_labels import APLpyAxisLabels as AxisLabels
+from colorbar import Colorbar
 
 
 class FITSFigure(object):
@@ -122,10 +123,6 @@ class FITSFigure(object):
         self.hdu = fits.open(data)[hdu]
         self.wcs = WCS(self.hdu.header)
         self.ax = WCSAxes(self.fig, [0.1, 0.1, 0.8, 0.8], wcs=self.wcs)
-        # self.fig.add_axes(self.ax)  # note that the axes have to be added to the figure
-        # ax.imshow(hdu.data, vmin=-2.e-5, vmax=2.e-4, cmap=plt.cm.gist_heat,
-        #           origin='lower') # imshow should be at show_colorscale()
-
         # Initialize Ticks, TickLabels and AxisLabels
         self.ticks = Ticks(self.ax)
         self.axis_labels = AxisLabels(self.ax)
@@ -200,11 +197,10 @@ class FITSFigure(object):
 
         self.fig.add_axes(self.ax)
 
-        self.ax.imshow(self.hdu.data, cmap=None, aspect=aspect,
+        self.image = self.ax.imshow(self.hdu.data, cmap=None, aspect=aspect,
                        interpolation=interpolation,
                        vmin=vmin, vmax=vmax, origin='lower')
         # self.fig.canvas.draw()
-        plt.draw()
         # TODO: figure out what to do with the following parameters
         # * pmin
         # * pmax
@@ -296,9 +292,12 @@ class FITSFigure(object):
         else:
             cmap = 'gray'
 
-        self.ax.imshow(self.hdu.data, cmap=cmap, aspect=aspect,
-                       interpolation=interpolation,
-                       vmin=vmin, vmax=vmax, origin='lower')
+        self.image = self.ax.imshow(self.hdu.data, cmap=cmap, aspect=aspect,
+                                    interpolation=interpolation,
+                                    vmin=vmin, vmax=vmax, origin='lower')
+
+    def return_image(self):
+        return self.image
 
     def hide_grayscale(self, *args, **kwargs):
         pass
@@ -404,7 +403,29 @@ class FITSFigure(object):
         pass
 
     def add_colorbar(self, *args, **kwargs):
-        pass
+        '''
+        Add a colorbar to the current figure.
+
+        Once this method has been run, a colorbar attribute becomes
+        available, and can be used to control the aspect of the colorbar::
+
+            >>> f = aplpy.FITSFigure(...)
+            >>> ...
+            >>> f.add_colorbar()
+            >>> f.colorbar.set_width(0.3)
+            >>> f.colorbar.set_location('top')
+            >>> ...
+        '''
+        if hasattr(self, 'colorbar'):
+            raise Exception("Colorbar already exists")
+        if self.image is None:
+            raise Exception("No image is shown, so a colorbar cannot be displayed")
+        # try:
+        self.colorbar = Colorbar(self)
+        # self.colorbar.show(*args, **kwargs)
+        # except:
+        #     del self.colorbar
+        #     raise
 
     def remove_colorbar(self):
         pass
