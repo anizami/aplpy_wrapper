@@ -18,7 +18,7 @@ from matplotlib.ticker import LogFormatterMathtext
 class Colorbar(object):
 
     def __init__(self, parent):
-        self._figure = parent.fig
+        self._figure = parent._figure
         self._colorbar_axes = None
         self._parent = parent
 
@@ -86,7 +86,7 @@ class Colorbar(object):
         if self._parent.image:
 
             if self._colorbar_axes:
-                self._parent.fig.delaxes(self._colorbar_axes)
+                self._parent._figure.delaxes(self._colorbar_axes)
 
             if box is None:
 
@@ -113,11 +113,11 @@ class Colorbar(object):
                 else:
                     raise Exception("location should be one of: right/top")
 
-                self._parent.fig.add_axes(self._colorbar_axes)
+                self._parent._figure.add_axes(self._colorbar_axes)
 
             else:
 
-                self._colorbar_axes = self._parent.fig.add_axes(box)
+                self._colorbar_axes = self._parent._figure.add_axes(box)
                 orientation = box_orientation
 
             if log_format:
@@ -125,7 +125,7 @@ class Colorbar(object):
             else:
                 format = None
 
-            self._colorbar = self._parent.fig.colorbar(self._parent.image, cax=self._colorbar_axes,
+            self._colorbar = self._parent._figure.colorbar(self._parent.image, cax=self._colorbar_axes,
                                                        orientation=orientation, format=format,
                                                        ticks=ticks)
             if axis_label_text:
@@ -178,12 +178,12 @@ class Colorbar(object):
 
     # @auto_refresh
     def hide(self):
-        self._parent.fig.delaxes(self._colorbar_axes)
+        self._parent._figure.delaxes(self._colorbar_axes)
         self._colorbar_axes = None
 
     # @auto_refresh
     def _remove(self):
-        self._parent.fig.delaxes(self._colorbar_axes)
+        self._parent._figure.delaxes(self._colorbar_axes)
 
     # LOCATION AND SIZE
 

@@ -1,12 +1,89 @@
-import matplotlib.pyplot as plt
+from __future__ import absolute_import, print_function, division
+
+from distutils import version
 import os
+import operator
+
+import matplotlib
+
+if version.LooseVersion(matplotlib.__version__) < version.LooseVersion('1.0.0'):
+    raise Exception("matplotlib 1.0.0 or later is required for APLpy")
+
+import matplotlib.pyplot as mpl
+import mpl_toolkits.axes_grid.parasite_axes as mpltk
+
+WCS_TYPES = []
+HDU_TYPES = []
+HDULIST_TYPES = []
+
+# We need to be able to accept PyFITS objects if users have old scripts that
+# are reading FITS files with this instead of Astropy
+try:
+    import pyfits
+    HDU_TYPES.append(pyfits.PrimaryHDU)
+    HDU_TYPES.append(pyfits.ImageHDU)
+    HDU_TYPES.append(pyfits.CompImageHDU)
+    HDULIST_TYPES.append(pyfits.HDUList)
+    del pyfits
+except ImportError:
+    pass
+
+# Similarly, we need to accept PyWCS objects
+try:
+    import pywcs
+    WCS_TYPES.append(pywcs.WCS)
+    del pywcs
+except ImportError:
+    pass
+
 from astropy.io import fits
+HDU_TYPES.append(fits.PrimaryHDU)
+HDU_TYPES.append(fits.ImageHDU)
+HDU_TYPES.append(fits.CompImageHDU)
+HDULIST_TYPES.append(fits.HDUList)
+
+from astropy.wcs import WCS
+WCS_TYPES.append(WCS)
+del WCS
+
+# Convert to tuples so that these work when calling isinstance()
+HDU_TYPES = tuple(HDU_TYPES)
+HDULIST_TYPES = tuple(HDULIST_TYPES)
+WCS_TYPES = tuple(WCS_TYPES)
+
+import numpy as np
+
+from matplotlib.patches import Circle, Rectangle, Ellipse, Polygon, FancyArrow
+from matplotlib.collections import PatchCollection, LineCollection
+
+from astropy import log
+import astropy.utils.exceptions as aue
+
+from decorators import auto_refresh, fixdocstring
+
+from deprecated import Deprecated
+
+
+# from .layers import Layers
+# from .grid import Grid
+# from .ticks import Ticks
+# from .labels import TickLabels
+# from .axis_labels import AxisLabels
+# from .overlays import Beam, Scalebar
+# from .regions import Regions
+# from .colorbar import Colorbar
+# from .normalize import APLpyNormalize
+# from .frame import Frame
+
+
+import matplotlib.pyplot as plt
 from astropy.wcs import WCS
 from wcsaxes import WCSAxes
 from ticks import APLpyTicks as Ticks
 from ticklabels import APLplyTickLabels as TickLabels
 from axis_labels import APLpyAxisLabels as AxisLabels
 from colorbar import Colorbar
+from overlays import Scalebar
 
 
 class FITSFigure(object):
@@ -116,13 +193,13 @@ class FITSFigure(object):
         # works with HDU objects
 
         # Start plotting the matplotlib figure
-        self.fig = plt.figure(figsize=self._kwargs['figsize'])
+        self._figure = plt.figure(figsize=self._kwargs['figsize'])
         # self.fig = fig  # Different from self._figure
 
         # Get the HDU data from the file
         self.hdu = fits.open(data)[hdu]
         self.wcs = WCS(self.hdu.header)
-        self.ax = WCSAxes(self.fig, [0.1, 0.1, 0.8, 0.8], wcs=self.wcs)
+        self.ax = WCSAxes(self._figure, [0.1, 0.1, 0.8, 0.8], wcs=self.wcs)
         # Initialize Ticks, TickLabels and AxisLabels
         self.ticks = Ticks(self.ax)
         self.axis_labels = AxisLabels(self.ax)
@@ -195,11 +272,11 @@ class FITSFigure(object):
             matplotlib documentation for imshow).
         '''
 
-        self.fig.add_axes(self.ax)
+        self._figure.add_axes(self.ax)
 
         self.image = self.ax.imshow(self.hdu.data, cmap=None, aspect=aspect,
-                       interpolation=interpolation,
-                       vmin=vmin, vmax=vmax, origin='lower')
+                                    interpolation=interpolation,
+                                    vmin=vmin, vmax=vmax, origin='lower')
         # self.fig.canvas.draw()
         # TODO: figure out what to do with the following parameters
         # * pmin
@@ -285,7 +362,7 @@ class FITSFigure(object):
         '''
 
         if invert == 'default':
-            invert = self.fig.apl_grayscale_invert_default
+            invert = self._figure.apl_grayscale_invert_default
 
         if invert:
             cmap = 'gist_yarg'
@@ -311,7 +388,7 @@ class FITSFigure(object):
 
     def save(self, filename, dpi=None, transparent=False, adjust_bbox=True,
              max_dpi=300, format=None):
-        self.fig.savefig(filename)
+        self._figure.savefig(filename)
         # self.fig.savefig(filename, transparent=transparent, dpi=dpi, format=format)
         # if isinstance(filename, basestring) and format is None:
         #         format = os.path.splitext(filename)[1].lower()[1:]
@@ -363,17 +440,16 @@ class FITSFigure(object):
                          variant=variant, stretch=stretch, weight=weight,
                          size=size, horizontalalignment=horizontalalignment,
                          verticalalignment=verticalalignment,
-                         transform=self._ax1.transAxes, **kwargs)
+                         transform=self.ax.transAxes, **kwargs)
         else:
             # Do a world2pix transformation
             # xp, yp = ...
             # Should I use the world2pix transformation from WCSAxes?
             xp, yp = WCS.wcs_world2pix(self.wcs, x, y)  # This doesn't feel right
-            self._ax1.text(xp, yp, text, color=color, family=family,
-                           style=style, variant=variant, stretch=stretch,
-                           weight=weight, size=size,
-                           horizontalalignment=horizontalalignment,
-                           verticalalignment=verticalalignment, **kwargs)
+            self.ax.text(xp, yp, text, color=color, family=family, style=style,
+                         variant=variant, stretch=stretch, weight=weight,
+                         size=size, horizontalalignment=horizontalalignment,
+                         verticalalignment=verticalalignment, **kwargs)
 
     def set_auto_refresh(self, refresh):
         pass
@@ -396,11 +472,36 @@ class FITSFigure(object):
     def remove_beam(self, beam_index=None):
         pass
 
+    #  Need to mess around with WCS to get the Scalebar to work
     def add_scalebar(self, length, *args, **kwargs):
-        pass
+        # pass
+        '''
+        Add a scalebar to the current figure.
+
+        Once this method has been run, a scalebar attribute becomes
+        available, and can be used to control the aspect of the scalebar::
+
+            >>> f = aplpy.FITSFigure(...)
+            >>> ...
+            >>> f.add_scalebar(0.01) # length has to be specified
+            >>> f.scalebar.set_label('100 AU')
+            >>> ...
+        '''
+        if hasattr(self, 'scalebar'):
+            raise Exception("Scalebar already exists")
+        # try:
+        self.scalebar = Scalebar(self)
+        self.scalebar.show(length, *args, **kwargs)
+        # except:
+        #     del self.scalebar
+        #     raise
 
     def remove_scalebar(self):
-        pass
+        '''
+        Removes the scalebar from the current figure.
+        '''
+        self.scalebar._remove()
+        del self.scalebar
 
     def add_colorbar(self, *args, **kwargs):
         '''
@@ -436,4 +537,7 @@ class FITSFigure(object):
         pass
 
     def close(self):
-        plt.close(self.fig)
+        plt.close(self._figure)
+
+
+# -----------------------------------------------------------------------------
