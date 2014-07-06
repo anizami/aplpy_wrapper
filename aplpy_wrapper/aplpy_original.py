@@ -1864,12 +1864,14 @@ class FITSFigure2(Layers, Regions, Deprecated):
         '''
         if hasattr(self, 'scalebar'):
             raise Exception("Scalebar already exists")
-        try:
-            self.scalebar = Scalebar(self)
-            self.scalebar.show(length, *args, **kwargs)
-        except:
-            del self.scalebar
-            raise
+        self.scalebar = Scalebar(self)
+        self.scalebar.show(length, *args, **kwargs)
+        # try:
+        #     self.scalebar = Scalebar(self)
+        #     self.scalebar.show(length, *args, **kwargs)
+        # except:
+        #     del self.scalebar
+        #     raise
 
     # @auto_refresh
     def remove_scalebar(self):

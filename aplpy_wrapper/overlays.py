@@ -30,8 +30,8 @@ class Scalebar(object):
 
         # Retrieve info from parent figure
         self._ax = parent.ax
-        self._wcs = parent.wcs
-        self._figure = parent.fig
+        self._wcs = parent._wcs
+        self._figure = parent._figure
 
         # Save plotting parameters (required for @auto_refresh)
         # self._parameters = parent._parameters
