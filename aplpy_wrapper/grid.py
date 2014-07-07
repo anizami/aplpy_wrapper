@@ -23,12 +23,14 @@ from decorators import auto_refresh
 class Grid(object):
 
     # @auto_refresh
-    def __init__(self, parent):
+    def __init__(self, parent, x, y):
 
         # Save axes and wcs information
         self.ax = parent.ax
         self._wcs = parent._wcs
         self._figure = parent._figure
+        self.x = x
+        self.y = y
 
         # Save plotting parameters (required for @auto_refresh)
         self._parameters = parent._parameters
@@ -63,12 +65,11 @@ class Grid(object):
             The spacing in the longitudinal direction. To set the spacing
             to be the same as the ticks, set this to 'tick'
         '''
-        # TODO: Assumes coords[0] is the x-axis
         # TODO: Assumes unit is degrees
         if xspacing != 'tick':
-            self.ax.coords[0].set_ticks(spacing=xspacing * u.deg)
+            self.ax.coords[self.x].set_ticks(spacing=xspacing * u.deg)
         else:
-            self.ax.coords[0].grid()
+            self.ax.coords[self.x].grid()
 
         # TODO: Ask Tom how to implement this because in WCSAxes, grid spacing
         # can only be changed with ticks spacing
@@ -101,24 +102,9 @@ class Grid(object):
         # TODO: Assumes coords[1] is the y-axis
         # TODO: Assumes unit is degrees
         if yspacing != 'tick':
-            self.ax.coords[1].set_ticks(spacing=yspacing * u.deg)
+            self.ax.coords[self.y].set_ticks(spacing=yspacing * u.deg)
         else:
-            self.ax.coords[1].grid()
-
-        # if yspacing == 'tick':
-        #     self.y_auto_spacing = True
-        # elif np.isreal(yspacing):
-        #     self.y_auto_spacing = False
-        #     if self._wcs.yaxis_coord_type in ['longitude', 'latitude']:
-        #         self.y_grid_spacing = au.Angle(
-        #             degrees=yspacing,
-        #             latitude=self._wcs.yaxis_coord_type == 'latitude')
-        #     else:
-        #         self.y_grid_spacing = yspacing
-        # else:
-        #     raise ValueError("Grid spacing should be a scalar or 'tick'")
-
-        # self._update()
+            self.ax.coords[self.y].grid()
 
     # @auto_refresh
     def set_color(self, color):
@@ -181,338 +167,3 @@ class Grid(object):
         # TODO: implement
         pass
         # self._grid.set_visible(False)
-
-    # @auto_refresh
-    # def _update(self, *args):
-    #     self._update_norefresh(*args)
-
-    # def _update_norefresh(self, *args):
-
-    #     if not self._active:
-    #         return self.ax
-
-    #     if len(args) == 1:
-    #         if id(self.ax) != id(args[0]):
-    #             raise Exception("ax ids should match")
-
-    #     lines = []
-
-    #     # Set x grid spacing
-    #     if self.x_auto_spacing:
-    #         if self.ax.xaxis.apl_auto_tick_spacing:
-    #             xspacing = default_spacing(self.ax, 'x',
-    #                                        self.ax.xaxis.apl_label_form)
-    #         else:
-    #             xspacing = self.ax.xaxis.apl_tick_spacing
-    #     else:
-    #         xspacing = self.x_grid_spacing
-
-    #     if xspacing is None:
-    #         warnings.warn("Could not determine x tick spacing - grid cannot be drawn")
-    #         return
-
-    #     if self._wcs.xaxis_coord_type in ['longitude', 'latitude']:
-    #         xspacing = xspacing.todegrees()
-
-    #     # Set y grid spacing
-    #     if self.y_auto_spacing:
-    #         if self.ax.yaxis.apl_auto_tick_spacing:
-    #             yspacing = default_spacing(self.ax, 'y',
-    #                                        self.ax.yaxis.apl_label_form)
-    #         else:
-    #             yspacing = self.ax.yaxis.apl_tick_spacing
-    #     else:
-    #         yspacing = self.y_grid_spacing
-
-    #     if yspacing is None:
-    #         warnings.warn("Could not determine y tick spacing - grid cannot be drawn")
-    #         return
-
-    #     if self._wcs.yaxis_coord_type in ['longitude', 'latitude']:
-    #         yspacing = yspacing.todegrees()
-
-    #     # Find x lines that intersect with axes
-    #     grid_x_i, grid_y_i = find_intersections(self.ax, 'x', xspacing)
-
-    #     # Ensure that longitudes are between 0 and 360, and latitudes between
-    #     # -90 and 90
-    #     if self._wcs.xaxis_coord_type == 'longitude':
-    #         grid_x_i = np.mod(grid_x_i, 360.)
-    #     elif self._wcs.xaxis_coord_type == 'latitude':
-    #         grid_x_i = np.mod(grid_x_i + 90., 180.) - 90.
-
-    #     if self._wcs.yaxis_coord_type == 'longitude':
-    #         grid_y_i = np.mod(grid_y_i, 360.)
-    #     elif self._wcs.yaxis_coord_type == 'latitude':
-    #         grid_y_i = np.mod(grid_y_i + 90., 180.) - 90.
-
-    #     # If we are dealing with longitude/latitude then can search all
-    #     # neighboring grid lines to see if there are any closed longitude
-    #     # lines
-    #     if self._wcs.xaxis_coord_type == 'latitude' and self._wcs.yaxis_coord_type == 'longitude' and len(grid_x_i) > 0:
-
-    #         gx = grid_x_i.min()
-
-    #         while True:
-    #             gx -= xspacing
-    #             xpix, ypix = wcs_util.world2pix(self._wcs, gx, 0.)
-    #             if in_plot(self.ax, xpix, ypix) and gx >= -90.:
-    #                 grid_x_i = np.hstack([grid_x_i, gx, gx])
-    #                 grid_y_i = np.hstack([grid_y_i, 0., 360.])
-    #             else:
-    #                 break
-
-    #         gx = grid_x_i.max()
-
-    #         while True:
-    #             gx += xspacing
-    #             xpix, ypix = wcs_util.world2pix(self._wcs, gx, 0.)
-    #             if in_plot(self.ax, xpix, ypix) and gx <= +90.:
-    #                 grid_x_i = np.hstack([grid_x_i, gx, gx])
-    #                 grid_y_i = np.hstack([grid_y_i, 0., 360.])
-    #             else:
-    #                 break
-
-    #     # Plot those lines
-    #     for gx in np.unique(grid_x_i):
-    #         for line in plot_grid_x(self.ax, grid_x_i, grid_y_i, gx):
-    #             lines.append(line)
-
-    #     # Find y lines that intersect with axes
-    #     grid_x_i, grid_y_i = find_intersections(self.ax, 'y', yspacing)
-
-    #     if self._wcs.xaxis_coord_type == 'longitude':
-    #         grid_x_i = np.mod(grid_x_i, 360.)
-    #     elif self._wcs.xaxis_coord_type == 'latitude':
-    #         grid_x_i = np.mod(grid_x_i + 90., 180.) - 90.
-
-    #     if self._wcs.yaxis_coord_type == 'longitude':
-    #         grid_y_i = np.mod(grid_y_i, 360.)
-    #     elif self._wcs.yaxis_coord_type == 'latitude':
-    #         grid_y_i = np.mod(grid_y_i + 90., 180.) - 90.
-
-    #     # If we are dealing with longitude/latitude then can search all
-    #     # neighboring grid lines to see if there are any closed longitude
-    #     # lines
-    #     if (self._wcs.xaxis_coord_type == 'longitude' and
-    #        self._wcs.yaxis_coord_type == 'latitude' and len(grid_y_i) > 0):
-
-    #         gy = grid_y_i.min()
-
-    #         while True:
-    #             gy -= yspacing
-    #             xpix, ypix = wcs_util.world2pix(self._wcs, 0., gy)
-    #             if in_plot(self.ax, xpix, ypix) and gy >= -90.:
-    #                 grid_x_i = np.hstack([grid_x_i, 0., 360.])
-    #                 grid_y_i = np.hstack([grid_y_i, gy, gy])
-    #             else:
-    #                 break
-
-    #         gy = grid_y_i.max()
-
-    #         while True:
-    #             gy += yspacing
-    #             xpix, ypix = wcs_util.world2pix(self._wcs, 0., gy)
-    #             if in_plot(self.ax, xpix, ypix) and gy <= +90.:
-    #                 grid_x_i = np.hstack([grid_x_i, 0., 360.])
-    #                 grid_y_i = np.hstack([grid_y_i, gy, gy])
-    #             else:
-    #                 break
-
-    #     # Plot those lines
-    #     for gy in np.unique(grid_y_i):
-    #         for line in plot_grid_y(self.ax, grid_x_i, grid_y_i, gy):
-    #             lines.append(line)
-
-    #     if self._grid:
-    #         self._grid.set_verts(lines)
-    #     else:
-    #         self._grid = LineCollection(lines, transOffset=self.ax.transData)
-    #         self.ax.add_collection(self._grid, False)
-
-    #     return self.ax
-
-
-# def plot_grid_y(ax, grid_x, grid_y, gy, alpha=0.5):
-#     '''Plot a single grid line in the y direction'''
-
-#     wcs = ax._wcs
-#     lines_out = []
-
-#     # Find intersections that correspond to latitude lat0
-#     index = np.where(grid_y == gy)
-
-#     # Produce sorted array of the longitudes of all intersections
-#     grid_x_sorted = np.sort(grid_x[index])
-
-#     # If coordinate type is a latitude or longitude, also need to check if
-#     # end-points fall inside the plot
-#     if wcs.xaxis_coord_type == 'latitude':
-#         if not np.any(grid_x_sorted == -90):
-#             xpix, ypix = wcs_util.world2pix(wcs, max(grid_x_sorted[0] - 1., -90.), gy)
-#             if in_plot(ax, xpix, ypix):
-#                 grid_x_sorted = np.hstack([-90., grid_x_sorted])
-#         if not np.any(grid_x_sorted == +90):
-#             xpix, ypix = wcs_util.world2pix(wcs, min(grid_x_sorted[-1] + 1., +90.), gy)
-#             if in_plot(ax, xpix, ypix):
-#                 grid_x_sorted = np.hstack([grid_x_sorted, +90.])
-#     elif wcs.xaxis_coord_type == 'longitude':
-#         if not np.any(grid_x_sorted == 0.):
-#             xpix, ypix = wcs_util.world2pix(wcs, max(grid_x_sorted[0] - 1., 0.), gy)
-#             if in_plot(ax, xpix, ypix):
-#                 grid_x_sorted = np.hstack([0., grid_x_sorted])
-#         if not np.any(grid_x_sorted == 360.):
-#             xpix, ypix = wcs_util.world2pix(wcs, min(grid_x_sorted[-1] + 1., 360.), gy)
-#             if in_plot(ax, xpix, ypix):
-#                 grid_x_sorted = np.hstack([grid_x_sorted, 360.])
-
-#     # Check if the first mid-point with coordinates is inside the viewport
-#     xpix, ypix = wcs_util.world2pix(wcs, (grid_x_sorted[0] + grid_x_sorted[1]) / 2., gy)
-
-#     if not in_plot(ax, xpix, ypix):
-#         grid_x_sorted = np.roll(grid_x_sorted, 1)
-
-#     # Check that number of grid points is even
-#     if len(grid_x_sorted) % 2 == 1:
-#         warnings.warn("Unexpected number of grid points - x grid lines cannot be drawn")
-#         return []
-
-#     # Cycle through intersections
-#     for i in range(0, len(grid_x_sorted), 2):
-
-#         grid_x_min = grid_x_sorted[i]
-#         grid_x_max = grid_x_sorted[i + 1]
-
-#         x_world = math_util.complete_range(grid_x_min, grid_x_max, 100)
-#         y_world = np.repeat(gy, len(x_world))
-#         x_pix, y_pix = wcs_util.world2pix(wcs, x_world, y_world)
-#         lines_out.append(zip(x_pix, y_pix))
-
-#     return lines_out
-
-
-# def plot_grid_x(ax, grid_x, grid_y, gx, alpha=0.5):
-#     '''Plot a single longitude line'''
-
-#     wcs = ax._wcs
-#     lines_out = []
-
-#     # Find intersections that correspond to longitude gx
-#     index = np.where(grid_x == gx)
-
-#     # Produce sorted array of the latitudes of all intersections
-#     grid_y_sorted = np.sort(grid_y[index])
-
-#     # If coordinate type is a latitude or longitude, also need to check if
-#     # end-points fall inside the plot
-#     if wcs.yaxis_coord_type == 'latitude':
-#         if not np.any(grid_y_sorted == -90):
-#             xpix, ypix = wcs_util.world2pix(wcs, gx, max(grid_y_sorted[0] - 1., -90.))
-#             if in_plot(ax, xpix, ypix):
-#                 grid_y_sorted = np.hstack([-90., grid_y_sorted])
-#         if not np.any(grid_y_sorted == +90):
-#             xpix, ypix = wcs_util.world2pix(wcs, gx, min(grid_y_sorted[-1] + 1., +90.))
-#             if in_plot(ax, xpix, ypix):
-#                 grid_y_sorted = np.hstack([grid_y_sorted, +90.])
-#     elif wcs.yaxis_coord_type == 'longitude':
-#         if not np.any(grid_y_sorted == 0.):
-#             xpix, ypix = wcs_util.world2pix(wcs, gx, max(grid_y_sorted[0] - 1., 0.))
-#             if in_plot(ax, xpix, ypix):
-#                 grid_y_sorted = np.hstack([0., grid_y_sorted])
-#         if not np.any(grid_y_sorted == 360.):
-#             xpix, ypix = wcs_util.world2pix(wcs, gx, min(grid_y_sorted[-1] + 1., 360.))
-#             if in_plot(ax, xpix, ypix):
-#                 grid_y_sorted = np.hstack([grid_y_sorted, 360.])
-
-#     # Check if the first mid-point with coordinates is inside the viewport
-#     xpix, ypix = wcs_util.world2pix(wcs, gx, (grid_y_sorted[0] + grid_y_sorted[1]) / 2.)
-
-#     if not in_plot(ax, xpix, ypix):
-#         grid_y_sorted = np.roll(grid_y_sorted, 1)
-
-#     # Check that number of grid points is even
-#     if len(grid_y_sorted) % 2 == 1:
-#         warnings.warn("Unexpected number of grid points - y grid lines cannot be drawn")
-#         return []
-
-#     # Cycle through intersections
-#     for i in range(0, len(grid_y_sorted), 2):
-
-#         grid_y_min = grid_y_sorted[i]
-#         grid_y_max = grid_y_sorted[i + 1]
-
-#         y_world = math_util.complete_range(grid_y_min, grid_y_max, 100)
-#         x_world = np.repeat(gx, len(y_world))
-#         x_pix, y_pix = wcs_util.world2pix(wcs, x_world, y_world)
-#         lines_out.append(zip(x_pix, y_pix))
-
-#     return lines_out
-
-
-# def in_plot(ax, x_pix, y_pix):
-#     '''Check whether a given point is in a plot'''
-
-#     xmin, xmax = ax.xaxis.get_view_interval()
-#     ymin, ymax = ax.yaxis.get_view_interval()
-
-#     return (x_pix > xmin + 0.5 and x_pix < xmax + 0.5 and
-#             y_pix > ymin + 0.5 and y_pix < ymax + 0.5)
-
-
-# def find_intersections(ax, coord, spacing):
-#     '''
-#     Find intersections of a given coordinate with all axes
-
-#     Parameters
-#     ----------
-
-#     ax :
-#        The matplotlib axis instance for the figure.
-
-#     coord : { 'x', 'y' }
-#        The coordinate for which we are looking for ticks.
-
-#     spacing : float
-#        The spacing along the axis.
-
-#     '''
-
-#     wcs = ax._wcs
-
-#     xmin, xmax = ax.xaxis.get_view_interval()
-#     ymin, ymax = ax.yaxis.get_view_interval()
-
-#     options = dict(mode='xy', xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
-
-#     # Initialize arrays
-#     x, y = [], []
-
-#     # Bottom X axis
-#     (labels_x, labels_y, world_x, world_y) = tick_positions(
-#         wcs, spacing, 'x', coord, farside=False, **options)
-
-#     x.extend(world_x)
-#     y.extend(world_y)
-
-#     # Top X axis
-#     (labels_x, labels_y, world_x, world_y) = tick_positions(
-#         wcs, spacing, 'x', coord, farside=True, **options)
-
-#     x.extend(world_x)
-#     y.extend(world_y)
-
-#     # Left Y axis
-#     (labels_x, labels_y, world_x, world_y) = tick_positions(
-#         wcs, spacing, 'y', coord, farside=False, **options)
-
-#     x.extend(world_x)
-#     y.extend(world_y)
-
-#     # Right Y axis
-#     (labels_x, labels_y, world_x, world_y) = tick_positions(
-#         wcs, spacing, 'y', coord, farside=True, **options)
-
-#     x.extend(world_x)
-#     y.extend(world_y)
-
-#     return np.array(x), np.array(y)

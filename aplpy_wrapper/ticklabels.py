@@ -4,8 +4,10 @@ position_map = {'bottom': 'b', 'top': 't', 'right': 'r', 'left': 'l'}
 
 
 class TickLabels(object):
-    def __init__(self, axes):
+    def __init__(self, axes, x, y):
         self._ax = axes
+        self.x = x
+        self.y = y
 
     def set_xformat(self, formatter):
         '''
@@ -26,7 +28,7 @@ class TickLabels(object):
         if isinstance(formatter, Formatter):
             raise NotImplementedError()
         else:  # Change this to elif isinstance(formatter, six.string_types) later
-            self._ax.coords[0].set_major_formatter(formatter)
+            self._ax.coords[self.x].set_major_formatter(formatter)
 
     def set_yformat(self, formatter):
         '''
@@ -47,7 +49,7 @@ class TickLabels(object):
         if isinstance(formatter, Formatter):
             raise NotImplementedError()
         else:
-            self._ax.coords[1].set_major_formatter(formatter)
+            self._ax.coords[self.y].set_major_formatter(formatter)
 
     def set_font(self, family=None, style=None, variant=None, stretch=None, weight=None, size=None, fontproperties=None):
         """
@@ -68,61 +70,55 @@ class TickLabels(object):
         # TODO: Ask Tom to confirm that there is currently no way to set
         # tick label font properties.
         pass
-        # ax.coords[0].set_axislabel(family=family, style=style, variant=variant,
-        #                            weight=weight, size=size,
-        #                            fontproperties=fontproperties)
-        # ax.coords[1].set_axislabel(family=family, style=style, variant=variant,
-        #                            weight=weight, size=size,
-        #                            fontproperties=fontproperties)
 
     def show(self):
         """
         Show the x- and y-axis tick labels.
         """
-        self._ax.coords[0].set_ticklabel_position('b')
-        self._ax.coords[1].set_ticklabel_position('l')
+        self._ax.coords[self.x].set_ticklabel_position('b')
+        self._ax.coords[self.y].set_ticklabel_position('l')
 
     def hide(self):
         """
         Hide the x- and y-axis tick labels.
         """
-        self._ax.coords[0].set_ticklabel_position('')
-        self._ax.coords[1].set_ticklabel_position('')
+        self._ax.coords[self.x].set_ticklabel_position('')
+        self._ax.coords[self.y].set_ticklabel_position('')
 
     def show_x(self):
         """
         Show the x-axis tick labels.
         """
-        self._ax.coords[0].set_ticklabel_position('b')
+        self._ax.coords[self.x].set_ticklabel_position('b')
 
     def hide_x(self):
         """
         Hide the x-axis tick labels.
         """
-        self._ax.coords[0].set_ticklabel_position('')
+        self._ax.coords[self.x].set_ticklabel_position('')
 
     def show_y(self):
         """
         Show the y-axis tick labels.
         """
-        self._ax.coords[1].set_ticklabel_position('l')
+        self._ax.coords[self.y].set_ticklabel_position('l')
 
     def hide_y(self):
         """
         Hide the y-axis tick labels.
         """
-        self._ax.coords[1].set_ticklabel_position('')
+        self._ax.coords[self.y].set_ticklabel_position('')
 
     def set_xposition(self, position):
         """
         Set the position of the x-axis tick labels ('top' or 'bottom')
         """
         position = position_map[position]
-        self._ax.coords[0].set_ticklabel_position(position)
+        self._ax.coords[self.x].set_ticklabel_position(position)
 
     def set_yposition(self, position):
         """
         Set the position of the y-axis tick labels ('left' or 'right')
         """
         position = position_map[position]
-        self._ax.coords[1].set_ticklabel_position(position)
+        self._ax.coords[self.y].set_ticklabel_position(position)

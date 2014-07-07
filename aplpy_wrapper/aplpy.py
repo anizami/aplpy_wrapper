@@ -336,11 +336,11 @@ class FITSFigure(Layers, Regions, Deprecated):
         self._figure.apl_colorscale_cmap_default = 'jet'
 
         # Initialize ticks
-        self.ticks = Ticks(self.ax)
+        self.ticks = Ticks(self.ax, self.x, self.y)
 
         # Initialize labels
-        self.axis_labels = AxisLabels(self.ax)
-        self.tick_labels = TickLabels(self.ax)
+        self.axis_labels = AxisLabels(self.ax, self.x, self.y)
+        self.tick_labels = TickLabels(self.ax, self.x, self.y)
 
         # TODO: Need this for themes
         # self.frame = Frame(self)
@@ -450,7 +450,10 @@ class FITSFigure(Layers, Regions, Deprecated):
                 log.info("Setting slices=%s" % str(slices))
 
         # Extract slices
-        data = slicer.slice_hypercube(data, header, dimensions=dimensions, slices=slices)
+        x, y, data = slicer.slice_hypercube(data, header, dimensions=dimensions, slices=slices)
+
+        self.x = x
+        self.y = y
 
         # Check header
         header = header_util.check(header, convention=convention, dimensions=dimensions)
@@ -1772,7 +1775,7 @@ class FITSFigure(Layers, Regions, Deprecated):
         if hasattr(self, 'grid'):
             raise Exception("Grid already exists")
         try:
-            self.grid = Grid(self)
+            self.grid = Grid(self, self.x, self.y)
             self.grid.show(*args, **kwargs)
         except:
             del self.grid
