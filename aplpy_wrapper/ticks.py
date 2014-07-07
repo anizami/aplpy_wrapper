@@ -1,7 +1,7 @@
 import astropy.units as u
 
 
-class APLpyTicks(object):
+class Ticks(object):
 
     def __init__(self, axes):
         self._ax = axes

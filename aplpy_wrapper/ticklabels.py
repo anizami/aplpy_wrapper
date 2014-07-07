@@ -3,7 +3,7 @@ from matplotlib.ticker import Formatter
 position_map = {'bottom': 'b', 'top': 't', 'right': 'r', 'left': 'l'}
 
 
-class APLplyTickLabels(object):
+class TickLabels(object):
     def __init__(self, axes):
         self._ax = axes
 

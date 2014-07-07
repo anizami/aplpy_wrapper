@@ -1,7 +1,7 @@
 position_map = {'bottom': 'b', 'top': 't', 'right': 'r', 'left': 'l'}
 
 
-class APLpyAxisLabels(object):
+class AxisLabels(object):
     def __init__(self, axes):
         self._ax = axes
 
