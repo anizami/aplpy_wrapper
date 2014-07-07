@@ -94,7 +94,7 @@ from overlays import Scalebar
 from normalize import APLpyNormalize
 from layers import Layers
 from regions import Regions
-
+from grid import Grid
 import contour_util
 import convolve_util
 import image_util
@@ -190,11 +190,12 @@ class FITSFigure2(Layers, Regions, Deprecated):
             set_auto_refresh method.
 
         kwargs
-            Any additional arguments are passed on to matplotlib's Figure() class.
-            For example, to set the figure size, use the figsize=(xsize, ysize)
-            argument (where xsize and ysize are in inches). For more information
-            on these additional arguments, see the *Optional keyword arguments*
-            section in the documentation for `Figure
+            Any additional arguments are passed on to matplotlib's Figure()
+            class. For example, to set the figure size, use the
+            figsize=(xsize, ysize) argument (where xsize and ysize are in
+            inches). For more information on these additional arguments,
+            see the *Optional keyword arguments* section in the documentation
+            for `Figure
             <http://matplotlib.sourceforge.net/api/figure_api.html?
             #matplotlib.figure.Figure>`_
         '''
@@ -508,7 +509,7 @@ class FITSFigure2(Layers, Regions, Deprecated):
         '''
         Center the image on a given position and with a given radius.
 
-        Either the radius or width/heigh arguments should be specified. The
+        Either the radius or width/height arguments should be specified. The
         units of the radius or width/height should be the same as the world
         coordinates in the WCS. For images of the sky, this is often (but not
         always) degrees.
@@ -1770,12 +1771,14 @@ class FITSFigure2(Layers, Regions, Deprecated):
         '''
         if hasattr(self, 'grid'):
             raise Exception("Grid already exists")
-        try:
-            self.grid = Grid(self)
-            self.grid.show(*args, **kwargs)
-        except:
-            del self.grid
-            raise
+        self.grid = Grid(self)
+        self.grid.show(*args, **kwargs)
+        # try:
+        #     self.grid = Grid(self)
+        #     self.grid.show(*args, **kwargs)
+        # except:
+        #     del self.grid
+        #     raise
 
     # @auto_refresh
     def remove_grid(self):
