@@ -159,12 +159,10 @@ class Grid(object):
     # @auto_refresh
     def set_linewidth(self, linewidth):
         self.ax.coords.grid(linewidth=linewidth)
-        # self._grid.set_linewidth(linewidth)
 
     # @auto_refresh
     def set_linestyle(self, linestyle):
         self.ax.coords.grid(linestyle=linestyle)
-        # self._grid.set_linestyle(linestyle)
 
     # @auto_refresh
     def show(self):

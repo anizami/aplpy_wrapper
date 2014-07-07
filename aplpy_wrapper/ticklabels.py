@@ -49,7 +49,6 @@ class TickLabels(object):
         else:
             self._ax.coords[1].set_major_formatter(formatter)
 
-
     def set_font(self, family=None, style=None, variant=None, stretch=None, weight=None, size=None, fontproperties=None):
         """
         Set the font of the tick labels.
@@ -66,10 +65,15 @@ class TickLabels(object):
         set_font has already been called. Global default values can be set by
         editing the matplotlibrc file.
         """
-        ax.coords[0].set_axislabel(family=family, style=style, variant=variant,
-                                   weight=weight, size=size, fontproperties=fontproperties)
-        ax.coords[1].set_axislabel(family=family, style=style, variant=variant,
-                                   weight=weight, size=size, fontproperties=fontproperties)
+        # TODO: Ask Tom to confirm that there is currently no way to set
+        # tick label font properties.
+        pass
+        # ax.coords[0].set_axislabel(family=family, style=style, variant=variant,
+        #                            weight=weight, size=size,
+        #                            fontproperties=fontproperties)
+        # ax.coords[1].set_axislabel(family=family, style=style, variant=variant,
+        #                            weight=weight, size=size,
+        #                            fontproperties=fontproperties)
 
     def show(self):
         """

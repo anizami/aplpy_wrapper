@@ -1771,14 +1771,12 @@ class FITSFigure(Layers, Regions, Deprecated):
         '''
         if hasattr(self, 'grid'):
             raise Exception("Grid already exists")
-        self.grid = Grid(self)
-        self.grid.show(*args, **kwargs)
-        # try:
-        #     self.grid = Grid(self)
-        #     self.grid.show(*args, **kwargs)
-        # except:
-        #     del self.grid
-        #     raise
+        try:
+            self.grid = Grid(self)
+            self.grid.show(*args, **kwargs)
+        except:
+            del self.grid
+            raise
 
     # @auto_refresh
     def remove_grid(self):
@@ -1864,17 +1862,21 @@ class FITSFigure(Layers, Regions, Deprecated):
             >>> f.add_scalebar(0.01) # length has to be specified
             >>> f.scalebar.set_label('100 AU')
             >>> ...
+
+        Parameters
+        ----------
+
+        length : float
+            The length of the scalebar
         '''
         if hasattr(self, 'scalebar'):
             raise Exception("Scalebar already exists")
-        self.scalebar = Scalebar(self)
-        self.scalebar.show(length, *args, **kwargs)
-        # try:
-        #     self.scalebar = Scalebar(self)
-        #     self.scalebar.show(length, *args, **kwargs)
-        # except:
-        #     del self.scalebar
-        #     raise
+        try:
+            self.scalebar = Scalebar(self)
+            self.scalebar.show(length, *args, **kwargs)
+        except:
+            del self.scalebar
+            raise
 
     # @auto_refresh
     def remove_scalebar(self):
@@ -1903,14 +1905,12 @@ class FITSFigure(Layers, Regions, Deprecated):
             raise Exception("Colorbar already exists")
         if self.image is None:
             raise Exception("No image is shown, so a colorbar cannot be displayed")
-        self.colorbar = Colorbar(self)
-        self.colorbar.show(*args, **kwargs)
-        # try:
-        #     self.colorbar = Colorbar(self)
-        #     self.colorbar.show(*args, **kwargs)
-        # except:
-        #     del self.colorbar
-        #     raise
+        try:
+            self.colorbar = Colorbar(self)
+            self.colorbar.show(*args, **kwargs)
+        except:
+            del self.colorbar
+            raise
 
     # @auto_refresh
     def remove_colorbar(self):

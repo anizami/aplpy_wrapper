@@ -9,30 +9,29 @@ class AxisLabels(object):
         """
         Set the x-axis label text.
         """
+        self._x_text = label
         self._ax.coords[0].set_axislabel(label)
 
     def set_ytext(self, label):
         """
         Set the y-axis label text.
         """
+        self._y_text = label
         self._ax.coords[1].set_axislabel(label)
 
     def set_xpad(self, pad):
         """
         Set the x-axis label displacement, in points.
         """
-        # Can't do it directly in WCSAxes
-        pass
+        self._ax.coords[0].set_axislabel(self._x_text, minpad=pad)
 
     def set_ypad(self, pad):
         """
         Set the y-axis label displacement, in points.
         """
-        # Can't do it directly in WCSAxes
-        pass
+        self._ax.coords[1].set_axislabel(self._y_text, minpad=pad)
 
-    def set_font(self, family=None, style=None, variant=None, stretch=None,
-                 weight=None, size=None, fontproperties=None):
+    def set_font(self, **kwargs):
         """
         Set the font of the axis labels.
 
@@ -48,8 +47,8 @@ class AxisLabels(object):
         set_font has already been called. Global default values can be set by
         editing the matplotlibrc file.
         """
-        # Can't do it directly in WCSAxes
-        pass
+        self._ax.coords[0].set_axislabel(self._x_text, **kwargs)
+        self._ax.coords[1].set_axislabel(self._y_text, **kwargs)
 
     def show(self):
         """
