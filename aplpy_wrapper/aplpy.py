@@ -86,9 +86,9 @@ from deprecated import Deprecated
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as mpl
 from wcsaxes import WCSAxes
-from ticks import APLpyTicks as Ticks
-from ticklabels import APLplyTickLabels as TickLabels
-from axis_labels import APLpyAxisLabels as AxisLabels
+from ticks import Ticks
+from ticklabels import TickLabels
+from axis_labels import AxisLabels
 from colorbar import Colorbar
 from overlays import Scalebar
 from normalize import APLpyNormalize
@@ -110,7 +110,7 @@ class Parameters():
     pass
 
 
-class FITSFigure2(Layers, Regions, Deprecated):
+class FITSFigure(Layers, Regions, Deprecated):
 
     "A class for plotting FITS files."
 
