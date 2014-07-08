@@ -25,8 +25,6 @@ def slice_hypercube(data, header, dimensions=[0, 1], slices=[]):
 
         if dimensions[1] < dimensions[0]:
             data = data.transpose()
-            x_axis = dimensions[1]
-            y_axis = dimensions[0]
 
         return x_axis, y_axis, data
 
@@ -48,8 +46,6 @@ def slice_hypercube(data, header, dimensions=[0, 1], slices=[]):
 
             if dimensions[1] < dimensions[0]:
                 data = data.transpose()
-                x_axis = dimensions[1]
-                y_axis = dimensions[0]
 
         else:
 

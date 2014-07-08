@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from matplotlib.ticker import Formatter
 
 position_map = {'bottom': 'b', 'top': 't', 'right': 'r', 'left': 'l'}
@@ -50,6 +52,30 @@ class TickLabels(object):
             raise NotImplementedError()
         else:
             self._ax.coords[self.y].set_major_formatter(formatter)
+
+    # @auto_refresh
+    def set_style(self, style):
+        """
+        Set the format of the x-axis tick labels.
+
+        This can be 'colons' or 'plain':
+
+            * 'colons' uses colons as separators, for example 31:41:59.26 +27:18:28.1
+            * 'plain' uses letters and symbols as separators, for example 31h41m59.26s +27º18'28.1"
+        """
+        # TODO: Figure out how to set separators from here..
+        pass
+    #     if style == 'latex':
+    #         warnings.warn("latex has now been merged with plain - whether or not to use LaTeX is controled through set_system_latex")
+    #         style = 'plain'
+
+    #     if style not in ['colons', 'plain']:
+    #         raise Exception("Label style should be one of colons/plain")
+
+    #     self._ax1.xaxis.apl_labels_style = style
+    #     self._ax1.yaxis.apl_labels_style = style
+    #     self._ax2.xaxis.apl_labels_style = style
+    #     self._ax2.yaxis.apl_labels_style = style
 
     def set_font(self, family=None, style=None, variant=None, stretch=None, weight=None, size=None, fontproperties=None):
         """

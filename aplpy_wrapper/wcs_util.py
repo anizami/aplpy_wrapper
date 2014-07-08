@@ -121,58 +121,57 @@ class WCS(AstropyWCS):
             raise AttributeError("Attribute %s does not exist" % attribute)
 
     # TODO: Ask Tom about these transformations
-    # def wcs_world2pix(self, x, y, origin):
-    #     if self.naxis == 2:
-    #         if self._dimensions[1] < self._dimensions[0]:
-    #             xp, yp = AstropyWCS.wcs_world2pix(self, y, x, origin)
-    #             return yp, xp
-    #         else:
-    #             return AstropyWCS.wcs_world2pix(self, x, y, origin)
-    #     else:
-    #         coords = []
-    #         s = 0
-    #         for dim in range(self.naxis):
-    #             if dim == self._dimensions[0]:
-    #                 coords.append(x)
-    #             elif dim == self._dimensions[1]:
-    #                 coords.append(y)
-    #             else:
-    #                 # The following is an approximation, and will break down if
-    #                 # the world coordinate changes significantly over the slice
-    #                 coords.append(np.repeat(self._mean_world[dim], x.shape))
-    #                 s += 1
-    #         coords = np.vstack(coords).transpose()
+    def wcs_world2pix(self, x, y, origin=1):
+        if self.naxis == 2:
+            if self._dimensions[1] < self._dimensions[0]:
+                xp, yp = AstropyWCS.wcs_world2pix(self, y, x, origin)
+                return yp, xp
+            else:
+                return AstropyWCS.wcs_world2pix(self, x, y, origin)
+        else:
+            coords = []
+            s = 0
+            for dim in range(self.naxis):
+                if dim == self._dimensions[0]:
+                    coords.append(x)
+                elif dim == self._dimensions[1]:
+                    coords.append(y)
+                else:
+                    # The following is an approximation, and will break down if
+                    # the world coordinate changes significantly over the slice
+                    coords.append(np.repeat(self._mean_world[dim], x.shape))
+                    s += 1
+            coords = np.vstack(coords).transpose()
 
-    #         # Due to a bug in pywcs, we need to loop over each coordinate
-    #         # result = AstropyWCS.wcs_world2pix(self, coords, origin)
-    #         result = np.zeros(coords.shape)
-    #         for i in range(result.shape[0]):
-    #             result[i:i + 1, :] = AstropyWCS.wcs_world2pix(self, coords[i:i + 1, :], origin)
-
-    #         return result[:, self._dimensions[0]], result[:, self._dimensions[1]]
+            # Due to a bug in pywcs, we need to loop over each coordinate
+            # result = AstropyWCS.wcs_world2pix(self, coords, origin)
+            result = np.zeros(coords.shape)
+            for i in range(result.shape[0]):
+                result[i:i + 1, :] = AstropyWCS.wcs_world2pix(self, coords[i:i + 1, :], origin)
+            return result[:, self._dimensions[0]], result[:, self._dimensions[1]]
 
     # TODO: Had to comment this out for fig to save..Ask Tom
-    # def wcs_pix2world(self, x, y, origin):
-    #     if self.naxis == 2:
-    #         if self._dimensions[1] < self._dimensions[0]:
-    #             xw, yw = AstropyWCS.wcs_pix2world(self, y, x, origin)
-    #             return yw, xw
-    #         else:
-    #             return AstropyWCS.wcs_pix2world(self, x, y, origin)
-    #     else:
-    #         coords = []
-    #         s = 0
-    #         for dim in range(self.naxis):
-    #             if dim == self._dimensions[0]:
-    #                 coords.append(x)
-    #             elif dim == self._dimensions[1]:
-    #                 coords.append(y)
-    #             else:
-    #                 coords.append(np.repeat(self._slices[s] + 0.5, x.shape))
-    #                 s += 1
-    #         coords = np.vstack(coords).transpose()
-    #         result = AstropyWCS.wcs_pix2world(self, coords, origin)
-    #         return result[:, self._dimensions[0]], result[:, self._dimensions[1]]
+    def wcs_pix2world(self, x, y, origin=1):
+        if self.naxis == 2:
+            if self._dimensions[1] < self._dimensions[0]:
+                xw, yw = AstropyWCS.wcs_pix2world(self, y, x, origin)
+                return yw, xw
+            else:
+                return AstropyWCS.wcs_pix2world(self, x, y, origin)
+        else:
+            coords = []
+            s = 0
+            for dim in range(self.naxis):
+                if dim == self._dimensions[0]:
+                    coords.append(x)
+                elif dim == self._dimensions[1]:
+                    coords.append(y)
+                else:
+                    coords.append(np.repeat(self._slices[s] + 0.5, x.shape))
+                    s += 1
+            coords = np.vstack(coords).transpose()
+            result = AstropyWCS.wcs_pix2world(self, coords, origin)
+            return result[:, self._dimensions[0]], result[:, self._dimensions[1]]
 
 
 def convert_coords(x, y, input, output):

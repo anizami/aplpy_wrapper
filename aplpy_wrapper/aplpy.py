@@ -474,8 +474,7 @@ class FITSFigure(Layers, Regions, Deprecated):
         * ``longitude``: treat the values as a longitude in the 0 to 360 range
         * ``latitude``: treat the values as a latitude in the -90 to 90 range
         '''
-        # TODO: Assumes x and y axis are coords[0] and [1] respectively - fix
-        self.ax.coords[0].set_coord_type(coord_type)
+        self.ax.coords[self.x].set_coord_type(coord_type)
 
     # @auto_refresh
     def set_yaxis_coord_type(self, coord_type):
@@ -488,8 +487,7 @@ class FITSFigure(Layers, Regions, Deprecated):
         * ``longitude``: treat the values as a longitude in the 0 to 360 range
         * ``latitude``: treat the values as a latitude in the -90 to 90 range
         '''
-        # TODO: Assumes x and y axis are coords[0] and [1] respectively - fix
-        self.ax.coords[1].set_coord_type(coord_type)
+        self.ax.coords[self.y].set_coord_type(coord_type)
 
     # @auto_refresh
     def set_system_latex(self, usetex):
