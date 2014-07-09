@@ -203,6 +203,8 @@ class FITSFigure(Layers, Regions, Deprecated):
         # Set whether to automatically refresh the display
         self.set_auto_refresh(auto_refresh)
 
+        self._wcsaxes_slices = ('x', 'y')
+
         if 'figsize' not in kwargs:
             kwargs['figsize'] = (10, 9)
 
@@ -270,8 +272,9 @@ class FITSFigure(Layers, Regions, Deprecated):
                 log.warning("north argument is ignored if data passed is a WCS object")
                 north = False
         else:
-            self._data, self._header, self._wcs = self._get_hdu(data, hdu, north, \
-                convention=convention, dimensions=dimensions, slices=slices)
+            self._data, self._header, self._wcs, self._wcsaxes_slices = self._get_hdu(data, hdu, north, convention=convention,
+                          dimensions=dimensions,
+                          slices=slices)
             self._wcs.nx = self._header['NAXIS%i' % (dimensions[0] + 1)]
             self._wcs.ny = self._header['NAXIS%i' % (dimensions[1] + 1)]
 
@@ -299,7 +302,7 @@ class FITSFigure(Layers, Regions, Deprecated):
         #     raise ValueError("subplot= should be either a tuple of three values, or a list of four values")
 
         # Initialize axis instance
-        self.ax = WCSAxes(self._figure, [0.1, 0.1, 0.8, 0.8], wcs=self._wcs)
+        self.ax = WCSAxes(self._figure, [0.1, 0.1, 0.8, 0.8], wcs=self._wcs, slices=self._wcsaxes_slices)
 
         # TODO: Figure out what to do with this
         # self._ax1.toggle_axisline(False)
@@ -450,7 +453,7 @@ class FITSFigure(Layers, Regions, Deprecated):
                 log.info("Setting slices=%s" % str(slices))
 
         # Extract slices
-        x, y, data = slicer.slice_hypercube(data, header, dimensions=dimensions, slices=slices)
+        x, y, data, wcsaxes_slices = slicer.slice_hypercube(data, header, dimensions=dimensions, slices=slices)
 
         self.x = x
         self.y = y
@@ -461,7 +464,7 @@ class FITSFigure(Layers, Regions, Deprecated):
         # Parse WCS info
         wcs = wcs_util.WCS(header, dimensions=dimensions, slices=slices, relax=True)
 
-        return data, header, wcs
+        return data, header, wcs, wcsaxes_slices
 
     # @auto_refresh
     def set_xaxis_coord_type(self, coord_type):
@@ -950,7 +953,7 @@ class FITSFigure(Layers, Regions, Deprecated):
             cmap = mpl.cm.get_cmap('jet')
 
         if data is not None:
-            data_contour, header_contour, wcs_contour = self._get_hdu(data,
+            data_contour, header_contour, wcs_contour, wcsaxes_slices = self._get_hdu(data,
                 hdu, False, convention=convention, dimensions=dimensions,
                 slices=slices)
         else:
