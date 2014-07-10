@@ -319,8 +319,6 @@ class FITSFigure(Layers, Regions, Deprecated):
         # self._initialize_view()
         # Code from self._initialize_view()
         self._extent = (0.5, self._wcs.nx + 0.5, 0.5, self._wcs.ny + 0.5)
-        self._figure.apl_grayscale_invert_default = False
-        self._figure.apl_colorscale_cmap_default = 'jet'
 
         # Initialize ticks
         self.ticks = Ticks(self.ax, self.x, self.y)
@@ -343,9 +341,8 @@ class FITSFigure(Layers, Regions, Deprecated):
         # Set image holder to be empty
         self.image = None
 
-        # TODO: Use this once self.frame is accounted for
         # Set default theme
-        # self.set_theme(theme='pretty')
+        self.set_theme(theme='pretty')
 
     def _get_hdu(self, data, hdu, north, convention=None, dimensions=[0, 1],
                  slices=[]):
