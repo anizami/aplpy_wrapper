@@ -93,9 +93,8 @@ class TickLabels(object):
         set_font has already been called. Global default values can be set by
         editing the matplotlibrc file.
         """
-        # TODO: Ask Tom to confirm that there is currently no way to set
-        # tick label font properties.
-        pass
+        self._ax.coords[self.x].set_ticklabel(**kwargs)
+        self._ax.coords[self.y].set_ticklabel(**kwargs)
 
     def show(self):
         """
