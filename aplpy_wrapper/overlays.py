@@ -9,9 +9,9 @@ import numpy as np
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.font_manager import FontProperties
 
-import wcs_util
-from decorators import auto_refresh
-# from .decorators import auto_refresh
+from . import wcs_util
+# from decorators import auto_refresh
+from .decorators import auto_refresh
 
 corners = {}
 corners['top right'] = 1

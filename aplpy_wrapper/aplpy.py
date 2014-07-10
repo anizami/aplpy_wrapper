@@ -59,9 +59,9 @@ from matplotlib.collections import PatchCollection, LineCollection
 from astropy import log
 import astropy.utils.exceptions as aue
 
-from decorators import auto_refresh, fixdocstring
+from .decorators import auto_refresh, fixdocstring
 
-from deprecated import Deprecated
+from .deprecated import Deprecated
 
 
 # from .layers import Layers
@@ -75,32 +75,26 @@ from deprecated import Deprecated
 # from .normalize import APLpyNormalize
 # from .frame import Frame
 
-# from . import contour_util
-# from . import convolve_util
-# from . import image_util
-# from . import header as header_util
-# from . import wcs_util
-# from . import slicer
+from . import contour_util
+from . import convolve_util
+from . import image_util
+from . import header as header_util
+from . import wcs_util
+from . import slicer
 
 
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as mpl
 from wcsaxes import WCSAxes
-from ticks import Ticks
-from ticklabels import TickLabels
-from axis_labels import AxisLabels
-from colorbar import Colorbar
-from overlays import Scalebar
-from normalize import APLpyNormalize
-from layers import Layers
-from regions import Regions
-from grid import Grid
-import contour_util
-import convolve_util
-import image_util
-import header as header_util
-import wcs_util
-import slicer
+from .ticks import Ticks
+from .ticklabels import TickLabels
+from .axis_labels import AxisLabels
+from .colorbar import Colorbar
+from .overlays import Scalebar
+from .normalize import APLpyNormalize
+from .layers import Layers
+from .regions import Regions
+from .grid import Grid
 
 
 class Parameters():

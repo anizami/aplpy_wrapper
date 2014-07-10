@@ -3,8 +3,7 @@ from __future__ import absolute_import, print_function, division
 import numpy as np
 from matplotlib.path import Path
 
-# from . import wcs_util
-import wcs_util
+from . import wcs_util
 
 
 def transform(contours, wcs_in, wcs_out, filled=False, overlap=False):

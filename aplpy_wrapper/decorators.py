@@ -2,7 +2,7 @@ from __future__ import absolute_import, print_function, division
 
 import threading
 
-from decorator import decorator
+from .decorator import decorator
 
 
 mydata = threading.local()

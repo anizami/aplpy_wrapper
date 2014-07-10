@@ -2,7 +2,7 @@ from __future__ import absolute_import, print_function, division
 
 from astropy import log
 
-from decorators import auto_refresh
+from .decorators import auto_refresh
 
 
 class Regions:

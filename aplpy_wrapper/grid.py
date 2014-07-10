@@ -17,7 +17,7 @@ import astropy.units as u
 # import wcs_util
 # import angle_util as au
 # from ticks import tick_positions, default_spacing
-from decorators import auto_refresh
+from .decorators import auto_refresh
 
 
 class Grid(object):

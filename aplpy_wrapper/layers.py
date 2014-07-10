@@ -4,8 +4,8 @@ from matplotlib.contour import ContourSet
 from matplotlib.collections import RegularPolyCollection, \
     PatchCollection, CircleCollection, LineCollection
 
-from regions import ArtistCollection
-from decorators import auto_refresh
+from .regions import ArtistCollection
+from .decorators import auto_refresh
 
 
 class Layers(object):
