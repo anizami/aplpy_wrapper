@@ -62,18 +62,7 @@ import astropy.utils.exceptions as aue
 from .decorators import auto_refresh, fixdocstring
 
 from .deprecated import Deprecated
-
-
-# from .layers import Layers
-# from .grid import Grid
-# from .ticks import Ticks
-# from .labels import TickLabels
-# from .axis_labels import AxisLabels
 # from .overlays import Beam, Scalebar
-# from .regions import Regions
-# from .colorbar import Colorbar
-# from .normalize import APLpyNormalize
-# from .frame import Frame
 
 from . import contour_util
 from . import convolve_util
@@ -95,6 +84,7 @@ from .normalize import APLpyNormalize
 from .layers import Layers
 from .regions import Regions
 from .grid import Grid
+from .frame import Frame
 
 
 class Parameters():
@@ -339,8 +329,7 @@ class FITSFigure(Layers, Regions, Deprecated):
         self.axis_labels = AxisLabels(self.ax, self.x, self.y)
         self.tick_labels = TickLabels(self.ax, self.x, self.y)
 
-        # TODO: Need this for themes
-        # self.frame = Frame(self)
+        self.frame = Frame(self)
 
         # TODO: What?
         # self._ax1.format_coord = self.tick_labels._cursor_position
@@ -784,7 +773,6 @@ class FITSFigure(Layers, Regions, Deprecated):
         color : str
             This can be any valid matplotlib color
         '''
-        # TODO: Do I need to change this?
         cm = self.image.get_cmap()
         cm.set_bad(color)
         self.image.set_cmap(cm)
