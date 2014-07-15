@@ -24,8 +24,7 @@ class Frame(object):
         linewidth:
             The linewidth to use for the frame.
         '''
-        pass  # Until PR 88 is merged
-        # self.ax.coords.set_frame_linewidth(linewidth)
+        self.ax.coords.frame.set_linewidth(linewidth)
 
     # @auto_refresh
     def set_color(self, color):
@@ -37,5 +36,4 @@ class Frame(object):
         color:
             The color to use for the frame.
         '''
-        pass  # Until PR 88 is merged
-        # self.ax.coords.set_frame_color(color)
+        self.ax.coords.frame.set_color(color)
