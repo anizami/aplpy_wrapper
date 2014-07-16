@@ -63,21 +63,34 @@ class TickLabels(object):
             * 'colons' uses colons as separators, for example 31:41:59.26 +27:18:28.1
             * 'plain' uses letters and symbols as separators, for example 31h41m59.26s +27º18'28.1"
         """
-        # TODO: Figure out how to set separators from here..
-        pass
-    #     if style == 'latex':
-    #         warnings.warn("latex has now been merged with plain - whether or not to use LaTeX is controled through set_system_latex")
-    #         style = 'plain'
+        # TODO: Remove pass once PR 90 in WCSAxes is merged
+        if style == 'latex':
+            warnings.warn("latex has now been merged with plain - whether or not to use LaTeX is controled through set_system_latex")
+            style = 'plain'
+        if style not in ['colons', 'plain']:
+            raise Exception("Label style should be one of colons/plain")
 
-    #     if style not in ['colons', 'plain']:
-    #         raise Exception("Label style should be one of colons/plain")
+        if style == 'colons':
+            x_sep = (':', ':', '')
+            y_sep = (':', ':', '')
 
-    #     self._ax1.xaxis.apl_labels_style = style
-    #     self._ax1.yaxis.apl_labels_style = style
-    #     self._ax2.xaxis.apl_labels_style = style
-    #     self._ax2.yaxis.apl_labels_style = style
+        else:
+            x_sep = ('d', 'm', 's')
+            y_sep = ('d', 'm', 's')
+            x_format = self._ax.coords[self.x]._formatter_locator.format
+            if (x_format is not None) and 'h' in x_format:
+                x_sep = ('h', 'm', 's')
+            y_format = self._ax.coords[self.y]._formatter_locator.format
+            if (y_format is not None) and 'h' in y_format:
+                y_sep = ('h', 'm', 's')
 
-    def set_font(self, family=None, style=None, variant=None, stretch=None, weight=None, size=None, fontproperties=None):
+        try:
+            self._ax.coords[self.x].set_separator(x_sep)
+            self._ax.coords[self.y].set_separator(y_sep)
+        except:
+            pass
+
+    def set_font(self, **kwargs):
         """
         Set the font of the tick labels.
 
