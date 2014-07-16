@@ -31,6 +31,9 @@ class Grid(object):
         self._figure = parent._figure
         self.x = x
         self.y = y
+        self.x_unit = self._wcs.wcs.cunit[self.x]
+        self.y_unit = self._wcs.wcs.cunit[self.y]
+        self.grid_type = parent.grid_type
 
         # Save plotting parameters (required for @auto_refresh)
         self._parameters = parent._parameters
@@ -67,7 +70,7 @@ class Grid(object):
         '''
         # TODO: Assumes unit is degrees
         if xspacing != 'tick':
-            self.ax.coords[self.x].set_ticks(spacing=xspacing * u.deg)
+            self.ax.coords[self.x].set_ticks(spacing=xspacing * self.x_unit)
         else:
             self.ax.coords[self.x].grid()
 
@@ -102,7 +105,7 @@ class Grid(object):
         # TODO: Assumes coords[1] is the y-axis
         # TODO: Assumes unit is degrees
         if yspacing != 'tick':
-            self.ax.coords[self.y].set_ticks(spacing=yspacing * u.deg)
+            self.ax.coords[self.y].set_ticks(spacing=yspacing * self.y_unit)
         else:
             self.ax.coords[self.y].grid()
 
@@ -152,7 +155,7 @@ class Grid(object):
 
     # @auto_refresh
     def show(self):
-        self.ax.grid()
+        self.ax.grid(grid_type=self.grid_type)
 
         # if self._grid:
         #     self._grid.set_visible(True)
@@ -164,6 +167,7 @@ class Grid(object):
 
     # @auto_refresh
     def hide(self):
-        # TODO: implement
-        pass
-        # self._grid.set_visible(False)
+        self.ax.grid(self, draw_grid=False)
+        # # TODO: implement
+        # pass
+        # # self._grid.set_visible(False)

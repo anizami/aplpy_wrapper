@@ -192,6 +192,11 @@ class FITSFigure(Layers, Regions, Deprecated):
         if 'figsize' not in kwargs:
             kwargs['figsize'] = (10, 9)
 
+        if len(slices) > 2:
+            self.grid_type = 'contours'
+        else:
+            self.grid_type = 'lines'
+
         if isinstance(data, basestring) and data.split('.')[-1].lower() in ['png', 'jpg', 'tif']:
 
             try:
