@@ -72,24 +72,7 @@ class Grid(object):
         if xspacing != 'tick':
             self.ax.coords[self.x].set_ticks(spacing=xspacing * self.x_unit)
         else:
-            self.ax.coords[self.x].grid()
-
-        # TODO: Ask Tom how to implement this because in WCSAxes, grid spacing
-        # can only be changed with ticks spacing
-        # if xspacing == 'tick':
-        #     self.x_auto_spacing = True
-        # elif np.isreal(xspacing):
-        #     self.x_auto_spacing = False
-        #     if self._wcs.xaxis_coord_type in ['longitude', 'latitude']:
-        #         self.x_grid_spacing = au.Angle(
-        #             degrees=xspacing,
-        #             latitude=self._wcs.xaxis_coord_type == 'latitude')
-        #     else:
-        #         self.x_grid_spacing = xspacing
-        # else:
-        #     raise ValueError("Grid spacing should be a scalar or 'tick'")
-
-        # self._update()
+            self.ax.coords[self.x].grid(grid_type=self.grid_type)
 
     # @auto_refresh
     def set_yspacing(self, yspacing):
@@ -102,12 +85,10 @@ class Grid(object):
             The spacing in the latitudinal direction. To set the spacing
             to be the same as the ticks, set this to 'tick'
         '''
-        # TODO: Assumes coords[1] is the y-axis
-        # TODO: Assumes unit is degrees
         if yspacing != 'tick':
             self.ax.coords[self.y].set_ticks(spacing=yspacing * self.y_unit)
         else:
-            self.ax.coords[self.y].grid()
+            self.ax.coords[self.y].grid(grid_type=self.grid_type)
 
     # @auto_refresh
     def set_color(self, color):
@@ -119,12 +100,7 @@ class Grid(object):
         color : str
             The color of the grid lines
         '''
-        self.ax.coords.grid(color=color)
-
-        # if self._grid:
-        #     self._grid.set_edgecolor(color)
-        # else:
-        #     self.default_color = color
+        self.ax.coords.grid(color=color, grid_type=self.grid_type)
 
     # @auto_refresh
     def set_alpha(self, alpha):
@@ -138,36 +114,21 @@ class Grid(object):
             point value between 0 and 1, where 0 is completely
             transparent, and 1 is completely opaque.
         '''
-        self.ax.coords.grid(alpha=alpha)
-
-        # if self._grid:
-        #     self._grid.set_alpha(alpha)
-        # else:
-        #     self.default_alpha = alpha
+        self.ax.coords.grid(alpha=alpha, grid_type=self.grid_type)
 
     # @auto_refresh
     def set_linewidth(self, linewidth):
-        self.ax.coords.grid(linewidth=linewidth)
+        self.ax.coords.grid(linewidth=linewidth, grid_type=self.grid_type)
 
     # @auto_refresh
     def set_linestyle(self, linestyle):
-        self.ax.coords.grid(linestyle=linestyle)
+        self.ax.coords.grid(linestyle=linestyle, grid_type=self.grid_type)
 
     # @auto_refresh
     def show(self):
         self.ax.grid(grid_type=self.grid_type)
 
-        # if self._grid:
-        #     self._grid.set_visible(True)
-        # else:
-        #     self._active = True
-        #     self._update()
-        #     self.set_color(self.default_color)
-        #     self.set_alpha(self.default_alpha)
-
     # @auto_refresh
     def hide(self):
-        self.ax.grid(self, draw_grid=False)
-        # # TODO: implement
-        # pass
-        # # self._grid.set_visible(False)
+        # TODO: Doesn't work..
+        self.ax.grid(draw_grid=False, grid_type=self.grid_type)

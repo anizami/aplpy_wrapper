@@ -192,7 +192,8 @@ class FITSFigure(Layers, Regions, Deprecated):
         if 'figsize' not in kwargs:
             kwargs['figsize'] = (10, 9)
 
-        if len(slices) > 2:
+        # Set the grid type
+        if len(slices) > 0:
             self.grid_type = 'contours'
         else:
             self.grid_type = 'lines'
