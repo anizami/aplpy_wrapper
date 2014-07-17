@@ -967,6 +967,8 @@ class FITSFigure(Layers, Regions, Deprecated):
                                 transform=self.ax.get_transform(wcs_contour),
                                 extent=extent_contour,
                                 cmap=cmap, colors=colors, **kwargs)
+        # Need to add this otherwise figure's shape changes to fit in everything
+        # of the contour
         self.ax.set_xlim(0, self._data.shape[self.x])
         self.ax.set_ylim(0, self._data.shape[self.y])
 
