@@ -64,7 +64,6 @@ from .decorators import auto_refresh, fixdocstring
 from .deprecated import Deprecated
 # from .overlays import Beam, Scalebar
 
-from . import contour_util
 from . import convolve_util
 from . import image_util
 from . import header as header_util
@@ -959,19 +958,23 @@ class FITSFigure(Layers, Regions, Deprecated):
             levels = np.linspace(vmin, vmax, levels)
 
         if filled:
-            c = self.ax.contourf(image_contour, levels, extent=extent_contour,
+            c = self.ax.contourf(image_contour, levels,
+                                 transform=self.ax.get_transform(wcs_contour),
+                                 extent=extent_contour,
                                  cmap=cmap, colors=colors, **kwargs)
         else:
-            c = self.ax.contour(image_contour, levels, extent=extent_contour,
+            c = self.ax.contour(image_contour, levels,
+                                transform=self.ax.get_transform(wcs_contour),
+                                extent=extent_contour,
                                 cmap=cmap, colors=colors, **kwargs)
+        self.ax.set_xlim(0, self._data.shape[self.x])
+        self.ax.set_ylim(0, self._data.shape[self.y])
 
         if layer:
             contour_set_name = layer
         else:
             self._contour_counter += 1
             contour_set_name = 'contour_set_' + str(self._contour_counter)
-
-        contour_util.transform(c, wcs_contour, self._wcs, filled=filled, overlap=overlap)
 
         self._layers[contour_set_name] = c
 
